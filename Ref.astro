@@ -1,0 +1,17 @@
+---
+interface Props {
+  id: string;
+}
+const { id } = Astro.props;
+if (!id) throw new Error('[astro-refs] <Ref> requires an id prop');
+---
+<span id={id} data-astro-refs={id} aria-hidden="true" class="astro-refs"></span>
+<style is:global>
+  .astro-refs {
+    display: block;
+    width: 0;
+    height: 0;
+    visibility: hidden;
+    scroll-margin-top: var(--astro-refs-scroll-offset, 80px);
+  }
+</style>

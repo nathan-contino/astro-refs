@@ -1,0 +1,17 @@
+{
+  "name": "astro-refs",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Sphinx-style named refs for Astro: declare anchors anywhere, link by name, stay valid when content moves",
+  "author": "Nathan Contino <ncontino@lambdalatitudinarians.org>",
+  "license": "MIT",
+  "keywords": ["astro", "astro-integration", "refs", "anchors", "cross-references"],
+  "exports": {
+    ".": "./index.mjs",
+    "./Ref.astro": "./Ref.astro"
+  },
+  "files": ["index.mjs", "Ref.astro"],
+  "peerDependencies": {
+    "astro": ">=4.0.0"
+  }
+}
