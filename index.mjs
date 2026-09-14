@@ -248,6 +248,8 @@ function remarkAstroRef({ state }) {
   };
 }
 
+export { remarkAstroRef };
+
 export default function astroRef(opts = {}) {
   const {
     collections          = [],
@@ -255,9 +257,10 @@ export default function astroRef(opts = {}) {
     failOnBrokenRefs     = true,
     failOnDuplicateRefs  = true,
     _exit                = process.exit,
+    state: externalState = null,
   } = opts;
 
-  const state = {
+  const state = externalState ?? {
     refMap:     null,
     brokenRefs: [],
     duplicates: [],
@@ -266,7 +269,7 @@ export default function astroRef(opts = {}) {
   return {
     name: 'astro-refs',
     hooks: {
-      'astro:config:setup': ({ config, updateConfig, logger }) => {
+      'astro:config:setup': async ({ config, updateConfig, logger }) => {
         const rootDir = config.root instanceof URL
           ? fileURLToPath(config.root)
           : String(config.root ?? '.');
@@ -287,14 +290,41 @@ export default function astroRef(opts = {}) {
           },
         };
 
-        updateConfig({
-          markdown: {
-            remarkPlugins: [[remarkAstroRef, { state }]],
-          },
-          vite: {
-            plugins: [vitePlugin],
-          },
-        });
+        // Astro 7 requires markdown.processor instead of markdown.remarkPlugins
+        let unifiedFn, isUnifiedProcessor;
+        try {
+          const { createRequire } = await import('node:module');
+          const req = createRequire(config.root);
+          const modPath = req.resolve('@astrojs/markdown-remark');
+          ({ unified: unifiedFn, isUnifiedProcessor } = await import(modPath));
+        } catch {
+          unifiedFn = null;
+        }
+
+        if (externalState) {
+          // caller wires remarkAstroRef manually (e.g. to cover both markdown and mdx processors)
+          updateConfig({ vite: { plugins: [vitePlugin] } });
+        } else if (unifiedFn) {
+          const existing = config.markdown?.processor;
+          const base = (existing && isUnifiedProcessor(existing)) ? existing.options : null;
+          const processor = unifiedFn({
+            remarkPlugins: [...(base?.remarkPlugins ?? []), [remarkAstroRef, { state }]],
+            rehypePlugins: base?.rehypePlugins ?? [],
+            remarkRehype: base?.remarkRehype ?? {},
+            gfm: base?.gfm,
+            smartypants: base?.smartypants,
+          });
+          updateConfig({
+            markdown: { processor },
+            vite: { plugins: [vitePlugin] },
+          });
+        } else {
+          // fallback for older Astro versions
+          updateConfig({
+            markdown: { remarkPlugins: [[remarkAstroRef, { state }]] },
+            vite: { plugins: [vitePlugin] },
+          });
+        }
       },
 
       'astro:build:done': ({ logger }) => {

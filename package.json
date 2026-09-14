@@ -1,6 +1,6 @@
 {
   "name": "astro-refs",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
   "description": "Sphinx-style named refs for Astro: declare anchors anywhere, link by name, stay valid when content moves",
   "author": "Nathan Contino <ncontino@lambdalatitudinarians.org>",
