@@ -1,11 +1,11 @@
-# astro-refs
+# astro-better-refs
 
 Sphinx-style named refs for Astro. Declare an anchor anywhere in your content and link to it by name from anywhere else in the site. Links stay valid even when content moves, because the name travels with the content.
 
 ## Installation
 
 ```sh
-npm install astro-refs
+npm install astro-better-refs
 ```
 
 ## Setup
@@ -15,7 +15,7 @@ Add the integration to your Astro config. The `collections` option maps each sou
 ```js
 // astro.config.mjs
 import { defineConfig } from 'astro';
-import astroRef from 'astro-refs';
+import astroRef from 'astro-better-refs';
 
 export default defineConfig({
   integrations: [
@@ -45,7 +45,7 @@ There are three ways to declare a ref. In all cases, the name must be unique acr
 Place an invisible anchor anywhere -- before a heading, in the middle of prose, wherever you want the link to land.
 
 ```mdx
-import Ref from 'astro-refs/Ref.astro';
+import Ref from 'astro-better-refs/Ref.astro';
 
 <Ref id="my-anchor" />
 ```
@@ -108,21 +108,21 @@ Links are resolved to real URLs at build time. Moving a page or heading only req
 
 ## Build output
 
-At the end of each build, astro-refs reports:
+At the end of each build, astro-better-refs reports:
 
 ```
-[astro-refs] all refs ok (42 declared)
+[astro-better-refs] all refs ok (42 declared)
 ```
 
 Or, if there are problems:
 
 ```
-[astro-refs] 1 duplicate ref:
+[astro-better-refs] 1 duplicate ref:
   "potato-varieties"
     src/content/docs/vegetables/potatoes.mdx
     src/content/docs/vegetables/starchy.mdx
 
-[astro-refs] 2 unresolved refs:
+[astro-better-refs] 2 unresolved refs:
   "missing-anchor"
   "old-section-name"
 ```
@@ -143,5 +143,5 @@ The default is 80px.
 
 ## Works well with
 
-- **astro-link-checker** -- once astro-refs resolves `ref:name` links to real URLs, astro-link-checker validates those URLs as regular links. If a ref points to a page that was deleted (but the declaration wasn't removed), astro-link-checker catches it.
+- **astro-better-link-checker** -- once astro-better-refs resolves `ref:name` links to real URLs, astro-better-link-checker validates those URLs as regular links. If a ref points to a page that was deleted (but the declaration wasn't removed), astro-better-link-checker catches it.
 - **astro-toc** -- refs declared with `{ref-name}` in headings do not appear in the table of contents. The heading itself renders normally; only the invisible anchor is added.

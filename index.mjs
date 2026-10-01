@@ -1,5 +1,5 @@
 /**
- * astro-refs
+ * astro-better-refs
  *
  * Sphinx-style named refs for Astro. Declare an anchor anywhere in your content
  * and link to it by name from anywhere else in the site. Links stay valid even
@@ -32,7 +32,7 @@
  *
  * Usage (astro.config.ts):
  *
- *   import astroRef from 'astro-refs';
+ *   import astroRef from 'astro-better-refs';
  *   export default defineConfig({
  *     integrations: [
  *       astroRef({
@@ -226,7 +226,7 @@ function remarkAstroRef({ state }) {
           node.url = entry.url;
         } else {
           state.brokenRefs.push(refName);
-          node.url = '#'; // safe fallback; astro-refs reports the broken ref
+          node.url = '#'; // safe fallback; astro-better-refs reports the broken ref
         }
       }
 
@@ -267,7 +267,7 @@ export default function astroRef(opts = {}) {
   };
 
   return {
-    name: 'astro-refs',
+    name: 'astro-better-refs',
     hooks: {
       'astro:config:setup': async ({ config, updateConfig, logger }) => {
         const rootDir = config.root instanceof URL
@@ -275,12 +275,12 @@ export default function astroRef(opts = {}) {
           : String(config.root ?? '.');
 
         if (!collections.length) {
-          (logger ?? console).warn('[astro-refs] no collections configured — no refs will be scanned');
+          (logger ?? console).warn('[astro-better-refs] no collections configured — no refs will be scanned');
         }
 
         let scanned = false;
         const vitePlugin = {
-          name: 'astro-refs-scanner',
+          name: 'astro-better-refs-scanner',
           async buildStart() {
             if (scanned || !collections.length) return;
             scanned = true;
@@ -335,19 +335,19 @@ export default function astroRef(opts = {}) {
           const lines = state.duplicates
             .map(({ name, file1, file2 }) => `  "${name}"\n    ${file1}\n    ${file2}`)
             .join('\n');
-          log(`[astro-refs] ${state.duplicates.length} duplicate ref${state.duplicates.length === 1 ? '' : 's'}:\n${lines}`);
+          log(`[astro-better-refs] ${state.duplicates.length} duplicate ref${state.duplicates.length === 1 ? '' : 's'}:\n${lines}`);
           if (failOnDuplicateRefs) fail = true;
         }
 
         const uniqueBroken = [...new Set(state.brokenRefs)].sort();
         if (uniqueBroken.length > 0) {
           const lines = uniqueBroken.map(n => `  "${n}"`).join('\n');
-          log(`[astro-refs] ${uniqueBroken.length} unresolved ref${uniqueBroken.length === 1 ? '' : 's'}:\n${lines}`);
+          log(`[astro-better-refs] ${uniqueBroken.length} unresolved ref${uniqueBroken.length === 1 ? '' : 's'}:\n${lines}`);
           if (failOnBrokenRefs) fail = true;
         }
 
         if (!state.duplicates.length && !uniqueBroken.length) {
-          log(`[astro-refs] all refs ok (${state.refMap?.size ?? 0} declared)`);
+          log(`[astro-better-refs] all refs ok (${state.refMap?.size ?? 0} declared)`);
         }
 
         if (fail) _exit(1);

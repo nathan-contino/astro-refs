@@ -1,16 +1,34 @@
 {
-  "name": "astro-refs",
+  "name": "astro-better-refs",
   "version": "0.1.1",
-  "type": "module",
   "description": "Sphinx-style named refs for Astro: declare anchors anywhere, link by name, stay valid when content moves",
-  "author": "Nathan Contino <ncontino@lambdalatitudinarians.org>",
+  "keywords": [
+    "astro",
+    "astro-integration",
+    "refs",
+    "anchors",
+    "cross-references"
+  ],
   "license": "MIT",
-  "keywords": ["astro", "astro-integration", "refs", "anchors", "cross-references"],
+  "author": "Nathan Contino <ncontino@lambdalatitudinarians.org>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/better-static-sites/better-static-sites.github.io.git",
+    "directory": "astro-better-refs"
+  },
+  "homepage": "https://better-static-sites.github.io",
+  "bugs": {
+    "url": "https://github.com/better-static-sites/better-static-sites.github.io/issues"
+  },
+  "type": "module",
   "exports": {
     ".": "./index.mjs",
     "./Ref.astro": "./Ref.astro"
   },
-  "files": ["index.mjs", "Ref.astro"],
+  "files": [
+    "index.mjs",
+    "Ref.astro"
+  ],
   "peerDependencies": {
     "astro": ">=4.0.0"
   }
