@@ -106,6 +106,18 @@ Links are resolved to real URLs at build time. Moving a page or heading only req
 | `failOnBrokenRefs` | `boolean` | `true` | Exit with an error if any `ref:name` link has no matching declaration. |
 | `failOnDuplicateRefs` | `boolean` | `true` | Exit with an error if the same ref name is declared more than once. |
 
+## Sätteri
+
+When `markdown.processor` is a [Sätteri](https://satteri.bruits.org/) processor, the integration adds its Sätteri plugin to it instead of building a unified processor. To cover MDX too, pass a shared `state` to the integration and add the plugin to each processor yourself:
+
+```ts
+import { refs } from 'astro-better-refs/satteri';
+
+const state = { refMap: null, brokenRefs: [], duplicates: [] };
+const processor = satteri({ mdastPlugins: [refs({ state })] });
+// markdown: { processor }, integrations: [mdx({ processor }), astroRef({ collections, state })]
+```
+
 ## Build output
 
 At the end of each build, astro-better-refs reports:

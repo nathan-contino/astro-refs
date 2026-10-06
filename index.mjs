@@ -56,6 +56,8 @@ import { readdir, readFile } from 'node:fs/promises';
 import { join, relative, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import process from 'node:process';
+import { anchorHtml, resolveRefUrl, splitHeadingRef } from './core.mjs';
+import { refs as satteriRefs } from './satteri.mjs';
 
 // Walk a directory tree, collecting files whose names end with one of `extensions`.
 async function walkFiles(dir, extensions) {
@@ -180,15 +182,6 @@ async function buildRefMap(collections, rootDir, extensions) {
   return { refMap, duplicates };
 }
 
-// Minimal HTML attribute escaping.
-function escAttr(s) {
-  return String(s)
-    .replace(/&/g, '&amp;')
-    .replace(/"/g, '&quot;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;');
-}
-
 // Remark plugin that transforms the Markdown/MDX AST:
 //
 //   [text](ref:name)            →  resolved URL from refMap, or '#' with broken-ref tracking
@@ -202,32 +195,18 @@ function remarkAstroRef({ state }) {
       if (node.type === 'heading') {
         const last = node.children?.[node.children.length - 1];
         if (last?.type === 'text') {
-          const m = last.value.match(/\s*\{([^}]+)\}\s*$/);
-          if (m) {
-            const refName = m[1].trim();
-            last.value = last.value.slice(0, m.index).trimEnd();
-            inserts.push({
-              parent,
-              index,
-              node: {
-                type: 'html',
-                value: `<span id="${escAttr(refName)}" data-astro-refs="${escAttr(refName)}" aria-hidden="true" class="astro-refs"></span>`,
-              },
-            });
+          const split = splitHeadingRef(last.value);
+          if (split) {
+            last.value = split.text;
+            inserts.push({ parent, index, node: { type: 'html', value: anchorHtml(split.refName) } });
           }
         }
       }
 
       // ref: URL scheme on links.
-      if (node.type === 'link' && typeof node.url === 'string' && node.url.startsWith('ref:')) {
-        const refName = node.url.slice(4);
-        const entry = state.refMap?.get(refName);
-        if (entry) {
-          node.url = entry.url;
-        } else {
-          state.brokenRefs.push(refName);
-          node.url = '#'; // safe fallback; astro-better-refs reports the broken ref
-        }
+      if (node.type === 'link') {
+        const url = resolveRefUrl(state, node.url);
+        if (url !== null) node.url = url;
       }
 
       if (Array.isArray(node.children)) {
@@ -303,6 +282,10 @@ export default function astroRef(opts = {}) {
 
         if (externalState) {
           // caller wires remarkAstroRef manually (e.g. to cover both markdown and mdx processors)
+          updateConfig({ vite: { plugins: [vitePlugin] } });
+        } else if (config.markdown?.processor?.name === 'satteri') {
+          // Sätteri processors keep their options mutable for integrations to extend
+          config.markdown.processor.options.mdastPlugins.push(satteriRefs({ state }));
           updateConfig({ vite: { plugins: [vitePlugin] } });
         } else if (unifiedFn) {
           const existing = config.markdown?.processor;
