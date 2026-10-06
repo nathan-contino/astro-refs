@@ -1,6 +1,6 @@
 {
   "name": "astro-better-refs",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Sphinx-style named refs for Astro: declare anchors anywhere, link by name, stay valid when content moves",
   "keywords": [
     "astro",
