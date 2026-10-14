@@ -15,7 +15,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/better-static-sites/better-static-sites.github.io.git",
-    "directory": "astro-better-refs"
+    "directory": "lib/refs"
   },
   "homepage": "https://better-static-sites.github.io",
   "bugs": {
@@ -29,16 +29,14 @@
   },
   "files": [
     "index.mjs",
-    "core.mjs",
-    "satteri.mjs",
     "Ref.astro"
   ],
+  "scripts": {
+    "test": "node --test test/"
+  },
   "peerDependencies": {
     "astro": ">=4.0.0",
     "satteri": ">=0.10.0 <0.11.0"
-  },
-  "scripts": {
-    "test": "node --test test/"
   },
   "peerDependenciesMeta": {
     "satteri": {
