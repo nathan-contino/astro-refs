@@ -29,6 +29,8 @@
   },
   "files": [
     "index.mjs",
+    "core.mjs",
+    "satteri.mjs",
     "Ref.astro"
   ],
   "scripts": {
